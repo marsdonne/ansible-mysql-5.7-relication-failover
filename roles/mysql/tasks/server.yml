@@ -52,6 +52,7 @@
 
 - name: Change mysql temporary password
   command: mysql -uroot -p'{{mysql_temp_pass.stdout}}' --connect-expired-password -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_user.password }}'; flush privileges; "
+  ignore_errors: yes
   
 - name: Ensure root user exists on all instances
   mysql_user:
