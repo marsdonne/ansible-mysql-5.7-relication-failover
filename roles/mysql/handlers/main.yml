@@ -1,5 +1,5 @@
 - name: restart mysql
-  service: name={{ mysqld }} state=restarted enabled=yes
+  service: name={{ mysql_daemon }} state=restarted enabled=yes
 
 - name: restart mysqlfailover
   service: name=mysqlfailover state=restarted enabled=yes

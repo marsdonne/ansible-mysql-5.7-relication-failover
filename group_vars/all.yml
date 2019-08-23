@@ -1,3 +1,14 @@
-mysql_port: 3306
+ansible_user: root
+
 frontend_mysql_master_port: 3310
 frontend_mysql_slave_port: 3311
+mysql_port: 3306
+
+mysql_replication_user:
+  name: replicator
+  host: '%'
+  password: 'MyNewPass4_'
+mysql_root_user:
+  name: root
+  host: '%'
+  password: 'MyNewPass4_'

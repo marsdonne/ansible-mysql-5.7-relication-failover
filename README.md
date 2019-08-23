@@ -10,7 +10,7 @@ This Ansible role should
 Note: resolving hostnames important for orchestrator
 7) add mysqldump into root cron on all mysql servers that will take full backup from mysql slave daily
 
-Tested with ubuntu 16.04, debian 8 and ansible 2.3 (and vagrant 1.9)
+Tested with ubuntu 16.04, centos 7 and ansible 2.4
 
 **Important**  
 For avoiding split brains I recommend minimum setup of master + 2 slaves  
@@ -22,35 +22,22 @@ So you'll get read only master after any restart except orchestrator auto failov
 
 Minimum variables that you should know and set:
 
-mysql.yml
-```
-- name: Mysql Setup
-  hosts: mysql
-  become: true
-  vars:
-    replication_user:
-      name: replicator
-      host: '%'
-      password: '_strong_password_'
-    root_user:
-      name: root
-      host: '%'
-      password: '_strong_password_'
-***
-- name: Orchestrator Setup
-  hosts: orchestrator
-  become: true
-  vars:
-    mysql_root_user:
-      name: root
-      password: '_strong_password_'
-```
-
 group_vars/all.yml
 ```
-mysql_port: 3306
+ansible_user: mars
+
 frontend_mysql_master_port: 3310
 frontend_mysql_slave_port: 3311
+mysql_port: 3306
+
+mysql_replication_user:
+  name: replicator
+  host: '%'
+  password: '_strong_password_'
+mysql_root_user:
+  name: root
+  host: '%'
+  password: '_strong_password_'
 ```
 
 How to test:
@@ -60,5 +47,11 @@ vagrant up
 ```
 2) run ansible playbook
 ```
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --ask-pass -i hosts mysql.yml
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --ask-pass --ask-sudo-pass -i hosts mysql.yml
+```
+
+Manually recover Dead-Master to slave:
+
+```
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook recoverDeadMaster2Slave.yml --ask-pass --ask-sudo-pass -e '{"dead_master_host":"192.168.56.123","live_master_host":"192.168.56.111"}'
 ```

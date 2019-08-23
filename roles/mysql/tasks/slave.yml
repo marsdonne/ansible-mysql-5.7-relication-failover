@@ -1,10 +1,10 @@
-- include: server.yml
+- import_tasks: server.yml
 
 - name: Check replication on slave
   mysql_replication:
     mode: getslave
-    login_user: "{{ root_user.name }}"
-    login_password: "{{ root_user.password }}"
+    login_user: "{{ mysql_root_user.name }}"
+    login_password: "{{ mysql_root_user.password }}"
     login_port: "{{ mysql_port }}"
   register: replica_status
   ignore_errors: yes
@@ -25,8 +25,8 @@
     name: all
     state: import
     target: /tmp/dump.sql
-    login_user: "{{ root_user.name }}"
-    login_password: "{{ root_user.password }}"
+    login_user: "{{ mysql_root_user.name }}"
+    login_password: "{{ mysql_root_user.password }}"
     login_port: "{{ mysql_port }}"
   when:
     - replica_status.Is_Slave|bool != true
@@ -42,23 +42,23 @@
     mode: changemaster
     master_host: "{{ hostvars[item].ansible_host }}"
     master_port: "{{ mysql_port }}"
-    master_user: "{{ replication_user.name }}"
-    master_password: "{{ replication_user.password }}"
+    master_user: "{{ mysql_replication_user.name }}"
+    master_password: "{{ mysql_replication_user.password }}"
     master_auto_position: 1
-    login_user: "{{ root_user.name }}"
-    login_password: "{{ root_user.password }}"
+    login_user: "{{ mysql_root_user.name }}"
+    login_password: "{{ mysql_root_user.password }}"
     login_port: "{{ mysql_port }}"
   when:
     - replica_status.Is_Slave|bool != true
-    - "{{ hostvars[item].mysql_role == 'master' }}"
+    - hostvars[item].mysql_role == 'master'
   with_items:
     - "{{ groups['mysql'] }}"
 
 - name: Start replication
   mysql_replication:
     mode: startslave
-    login_user: "{{ root_user.name }}"
-    login_password: "{{ root_user.password }}"
+    login_user: "{{ mysql_root_user.name }}"
+    login_password: "{{ mysql_root_user.password }}"
     login_port: "{{ mysql_port }}"
   when:
     - replica_status.Is_Slave|bool != true
@@ -66,6 +66,6 @@
 - name: Check replication status
   mysql_replication:
     mode: getslave
-    login_user: "{{ root_user.name }}"
-    login_password: "{{ root_user.password }}"
+    login_user: "{{ mysql_root_user.name }}"
+    login_password: "{{ mysql_root_user.password }}"
     login_port: "{{ mysql_port }}"

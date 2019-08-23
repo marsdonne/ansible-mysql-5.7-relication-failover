@@ -1,20 +1,37 @@
 ---
-- name: Add Oracle repo
-  apt_repository:
-    repo: deb http://repo.mysql.com/apt/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} mysql-5.7
-    state: present
-
-- name: Add Oracle key
+- name: Add Oracle key (apt)
   apt_key:
     keyserver: keyserver.ubuntu.com
     id: 5072E1F5
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Install mysql necessary packages
+- name: Add Oracle repo (apt)
+  apt_repository:
+    repo: deb http://repo.mysql.com/apt/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} mysql-5.7
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install mysql necessary packages (apt)
   apt: name={{ item }} state=present update_cache=yes
   with_items:
     - mysql-client
     - mysql-utilities
     - python-mysqldb
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  
+- name: Add Oracle repo (yum)
+  yum:
+    name: "http://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm"
+    state: present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install mysql necessary packages (yum)
+  yum: name={{ item }} state=present update_cache=yes
+  with_items:
+    - mysql-community-client
+    - mysql-utilities
+    - MySQL-python
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Create my.cnf because root user require password on this setup
   template:
@@ -24,8 +41,8 @@
     group: root
     mode: 0600
 
-- include: master.yml
+- import_tasks: master.yml
   when: mysql_role is defined and mysql_role == 'master'
 
-- include: slave.yml
+- import_tasks: slave.yml
   when: mysql_role is defined and mysql_role == 'slave'

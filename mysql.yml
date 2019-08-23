@@ -5,15 +5,19 @@
   gather_facts: False
 
   tasks:
-  - name: install python 2
-    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    - name: Ensure python2.x is available
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
 
 - name: Global Setup
   hosts: all
   become: true
 
   tasks:
-    - name: Install first necessary packages
+    - name: Ensure hostname valid on all hosts
+      command: hostnamectl set-hostname {{ inventory_hostname }}
+      #when: inventory_hostname != ansible_facts['nodename']
+
+    - name: Install first necessary packages (apt)
       apt: name={{ item }} state=present update_cache=yes
       with_items:
         - htop
@@ -21,6 +25,17 @@
         - mc
         - nano
         - curl
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    
+    - name: Install first necessary packages (yum)
+      yum: name={{ item }} state=present update_cache=yes
+      with_items:
+        - htop
+        - atop
+        - mc
+        - nano
+        - curl
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
     - name: Add hosts
       lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_host }} {{item}}" state=present
@@ -35,15 +50,6 @@
 - name: Mysql Setup
   hosts: mysql
   become: true
-  vars:
-    replication_user:
-      name: replicator
-      host: '%'
-      password: '_strong_password_'
-    root_user:
-      name: root
-      host: '%'
-      password: '_strong_password_'
 
   roles:
     - mysql
@@ -51,10 +57,6 @@
 - name: Orchestrator Setup
   hosts: orchestrator
   become: true
-  vars:
-    mysql_root_user:
-      name: root
-      password: '_strong_password_'
 
   roles:
     - orchestrator

@@ -1,6 +1,19 @@
 ---
-- name: Install haproxy
-  apt: package=haproxy state=present update_cache=yes
+- name: Install haproxy with apt
+  apt: pkg=haproxy state=present update_cache=yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install haproxy with yum
+  yum: pkg=haproxy state=present update_cache=yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Init haproxy env
+  file: path=/run/haproxy state=directory
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Change the haproxy_connect_any to permissive
+  command: setsebool -P haproxy_connect_any=1
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Set haproxy config
   template:

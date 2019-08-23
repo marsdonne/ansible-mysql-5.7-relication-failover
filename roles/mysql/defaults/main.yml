@@ -1,6 +1,6 @@
 mysql_config: "/etc/mysql/mysql.conf.d/mysqld.cnf"
 mysql_port: 3306
-mysqld: mysql
+mysql_daemon: mysql
 root_user:
   name: root
   host: '%'

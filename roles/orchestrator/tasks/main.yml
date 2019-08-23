@@ -1,38 +1,9 @@
 ---
-# https://github.com/github/orchestrator
+- import_tasks: install_with_apt.yml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Add orchestrator repo
-  apt_repository:
-    repo: deb https://packagecloud.io/github/orchestrator/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main
-    state: present
-
-- name: Add orchestrator key
-  apt_key:
-    url: "https://packagecloud.io/github/orchestrator/gpgkey"
-    state: present
-
-- name: Install orchestrator necessary packages
-  apt: name={{ item }} state=latest update_cache=yes
-  with_items:
-    - orchestrator-cli
-    - orchestrator
-    - curl
-    - jq
-
-- name: Fix orchestrator init script
-  blockinfile:
-    path: /etc/init.d/orchestrator
-    block: |
-        ### BEGIN INIT INFO
-        # Provides:          orchestrator
-        # Required-Start:    $remote_fs $network
-        # Required-Stop:     $remote_fs $network
-        # Default-Start:     2 3 4 5
-        # Default-Stop:      0 1 6
-        # Short-Description: orchestrator daemon
-        # Description:       Starts Orchestrator Daemon
-        ### END INIT INFO
-    insertafter: "#!/bin/bash"
+- import_tasks: install_with_yum.yml
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Create my.cnf because root user require password on this setup
   template:

@@ -1,7 +1,20 @@
-- name: Install mysql necessary packages
+- name: Install(apt) mysql necessary packages
   apt: name={{ item }} state=present update_cache=yes
   with_items:
     - mysql-server
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install(yum) mysql necessary packages
+  yum: name={{ item }} state=present update_cache=yes
+  with_items:
+    - mysql-server
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  
+- name: Set OS-specific variables
+  set_fact:
+    mysql_config: "/etc/my.cnf"
+    mysql_daemon: mysqld
+  when: ansible_os_family == 'RedHat'
 
 - name: Initial mysql configuration
   lineinfile: >
@@ -15,8 +28,8 @@
     - { regexp: '^#?\s*bind-address', line: "bind-address = 0.0.0.0", after: "" }
     - { regexp: '^#?\s*server-id', line: "server-id = {{ groups.mysql.index(inventory_hostname) + 1 }}", after: "" }
     - { regexp: '^#?\s*report-host', line: "report-host = {{ inventory_hostname }}", after: "" }
-    - { regexp: '^#?\s*log_bin', line: "log_bin = /var/log/mysql/mysql-bin.log", after: "" }
-    - { regexp: '^#?\s*relay-log', line: "relay-log = /var/log/mysql/mysql-relay-bin.log", after: '^#?\s*log_bin' }
+    - { regexp: '^#?\s*log_bin', line: "log_bin = mysql-bin.log", after: "" }
+    - { regexp: '^#?\s*relay-log', line: "relay-log = mysql-relay-bin.log", after: '^#?\s*log_bin' }
 #    - { regexp: '^#?\s*binlog-format', line: "binlog-format = ROW", after: "" }
     - { regexp: '^#?\s*log-slave-updates', line: "log-slave-updates = true", after: "" }
     - { regexp: '^#?\s*gtid-mode', line: "gtid-mode = on", after: "" }
@@ -31,12 +44,21 @@
 - name: Force restart mysql
   meta: flush_handlers
 
+- name: Get mysql temporary password for root
+  shell: |
+    password_match=`awk '/A temporary password is generated for/ {a=$0} END{ print a }' /var/log/mysqld.log | awk '{print $(NF)}'`
+    echo $password_match
+  register: mysql_temp_pass
+
+- name: Change mysql temporary password
+  command: mysql -uroot -p'{{mysql_temp_pass.stdout}}' --connect-expired-password -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_user.password }}'; flush privileges; "
+  
 - name: Ensure root user exists on all instances
   mysql_user:
-    name: "{{ root_user.name }}"
+    name: "{{ mysql_root_user.name }}"
     host: "localhost"
-    password: "{{ root_user.password }}"
-    priv: "{{ root_user.priv | default('*.*:ALL,GRANT') }}"
+    password: "{{ mysql_root_user.password }}"
+    priv: "{{ mysql_root_user.priv | default('*.*:ALL,GRANT') }}"
     state: present
     login_port: "{{ mysql_port }}"
   ignore_errors: yes
