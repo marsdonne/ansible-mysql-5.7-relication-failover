@@ -39,6 +39,30 @@
     - { regexp: '^#?\s*sync-master-info', line: "sync-master-info = 1", after: "" }
     - { regexp: '^#?\s*slave-skip-errors', line: "slave-skip-errors = all", after: "" }
     - { regexp: '^#?\s*read-only', line: "read-only = 1", after: "" }
+    - { regexp: '^#?\s*key_buffer_size', line: "key_buffer_size = {{ mysql_key_buffer_size }}", after: "" }
+    - { regexp: '^#?\s*max_allowed_packet', line: "max_allowed_packet = {{ mysql_max_allowed_packet }}", after: "" }
+    - { regexp: '^#?\s*table_open_cache', line: "table_open_cache = {{ mysql_table_open_cache }}", after: "" }
+    - { regexp: '^#?\s*sort_buffer_size', line: "sort_buffer_size = {{ mysql_sort_buffer_size }}", after: "" }
+    - { regexp: '^#?\s*read_buffer_size', line: "read_buffer_size = {{ mysql_read_buffer_size }}", after: "" }
+    - { regexp: '^#?\s*read_rnd_buffer_size', line: "read_rnd_buffer_size = {{ mysql_read_rnd_buffer_size }}", after: "" }
+    - { regexp: '^#?\s*myisam_sort_buffer_size', line: "myisam_sort_buffer_size = {{ mysql_myisam_sort_buffer_size }}", after: "" }
+    - { regexp: '^#?\s*thread_cache_size', line: "thread_cache_size = {{ mysql_thread_cache_size }}", after: "" }
+    - { regexp: '^#?\s*query_cache_type', line: "query_cache_type = {{ mysql_query_cache_type }}", after: "" }
+    - { regexp: '^#?\s*query_cache_size', line: "query_cache_size = {{ mysql_query_cache_size }}", after: "" }
+    - { regexp: '^#?\s*query_cache_limit', line: "query_cache_limit = {{ mysql_query_cache_limit }}", after: "" }
+    - { regexp: '^#?\s*max_connections', line: "max_connections = {{ mysql_max_connections }}", after: "" }
+    - { regexp: '^#?\s*tmp_table_size', line: "tmp_table_size = {{ mysql_tmp_table_size }}", after: "" }
+    - { regexp: '^#?\s*max_heap_table_size', line: "max_heap_table_size = {{ mysql_max_heap_table_size }}", after: "" }
+    - { regexp: '^#?\s*group_concat_max_len', line: "group_concat_max_len = {{ mysql_group_concat_max_len }}", after: "" }
+    - { regexp: '^#?\s*join_buffer_size', line: "join_buffer_size = {{ mysql_join_buffer_size }}", after: "" }
+    - { regexp: '^#?\s*innodb_large_prefix', line: "innodb_large_prefix = {{ mysql_innodb_large_prefix }}", after: "" }
+    - { regexp: '^#?\s*innodb_file_format', line: "innodb_file_format = {{ mysql_innodb_file_format }}", after: "" }
+    - { regexp: '^#?\s*innodb_file_per_table', line: "innodb_file_per_table = {{ mysql_innodb_file_per_table }}", after: "" }
+    - { regexp: '^#?\s*innodb_buffer_pool_size', line: "innodb_buffer_pool_size = {{ mysql_innodb_buffer_pool_size }}", after: "" }
+    - { regexp: '^#?\s*innodb_log_file_size', line: "innodb_log_file_size = {{ mysql_innodb_log_file_size }}", after: "" }
+    - { regexp: '^#?\s*innodb_log_buffer_size', line: "innodb_log_buffer_size = {{ mysql_innodb_log_buffer_size }}", after: "" }
+    - { regexp: '^#?\s*innodb_flush_log_at_trx_commit', line: "innodb_flush_log_at_trx_commit = {{ mysql_innodb_flush_log_at_trx_commit }}", after: "" }
+    - { regexp: '^#?\s*innodb_lock_wait_timeout', line: "innodb_lock_wait_timeout = {{ mysql_innodb_lock_wait_timeout }}", after: "" }
   notify: restart mysql
 
 - name: Force restart mysql
