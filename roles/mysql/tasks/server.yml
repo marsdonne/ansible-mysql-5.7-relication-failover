@@ -1,14 +1,16 @@
-- name: Install(apt) mysql necessary packages
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
-    - mysql-server
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- block:
+    - name: Install(apt) mysql necessary packages
+      apt: name={{ item }} state=present update_cache=yes
+      with_items:
+        - mysql-server
+      when: ansible_os_family == 'Debian'
 
-- name: Install(yum) mysql necessary packages
-  yum: name={{ item }} state=present update_cache=yes
-  with_items:
-    - mysql-server
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+    - name: Install(yum) mysql necessary packages
+      yum: name={{ item }} state=present update_cache=yes
+      with_items:
+        - mysql-server
+      when: ansible_os_family == 'RedHat'
+  environment: '{{ proxy_env | default({}) }}'
   
 - name: Set OS-specific variables
   set_fact:
