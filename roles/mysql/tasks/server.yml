@@ -1,14 +1,10 @@
 - block:
     - name: Install(apt) mysql necessary packages
-      apt: name={{ item }} state=present update_cache=yes
-      with_items:
-        - mysql-server
+      apt: name=mysql-server state=present update_cache=yes
       when: ansible_os_family == 'Debian'
 
     - name: Install(yum) mysql necessary packages
-      yum: name={{ item }} state=present update_cache=yes
-      with_items:
-        - mysql-server
+      yum: name=mysql-server state=present update_cache=yes
       when: ansible_os_family == 'RedHat'
   environment: '{{ proxy_env | default({}) }}'
   
