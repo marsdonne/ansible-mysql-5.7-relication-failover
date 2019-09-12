@@ -8,17 +8,20 @@
 # to verify ufw configuration run:
 # sudo ufw status verbose
 
-- name: Install ufw with apt
-  apt: pkg=ufw state=present
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- block:
+    - name: Install ufw with apt
+    apt: pkg=ufw state=present
+    when: ansible_os_family == 'Debian'
 
-- name: Install epel-release with yum
-  yum: pkg=epel-release state=present
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  - name: Install epel-release with yum
+    yum: pkg=epel-release state=present
+    when: ansible_os_family == 'RedHat'
 
-- name: Install ufw with yum
-  yum: pkg=ufw state=present
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  - name: Install ufw with yum
+    yum: pkg=ufw state=present
+    when: ansible_os_family == 'RedHat'
+  environment: '{{ proxy_env | default({}) }}'
+  tags: install_ufw
 
 - name: Configure ufw defaults
   ufw: direction={{ item.direction }} policy={{ item.policy }}
