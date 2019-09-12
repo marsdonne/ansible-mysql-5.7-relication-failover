@@ -3,18 +3,18 @@
   connection: local
   tasks:
     - add_host:
-        name: "{{ dead_master_host }}"
-        groups: deadMasters
+        name: "{{ slave }}"
+        groups: slaves
       changed_when: false
 
-- name: Manually recover Dead-Master to slave
-  hosts: deadMasters
+- name: Manually make slave replicate master
+  hosts: slaves
   
   tasks:
     - name: Set replication master
       mysql_replication:
         mode: changemaster
-        master_host: "{{ live_master_host }}"
+        master_host: "{{ master }}"
         master_port: "{{ mysql_port }}"
         master_user: "{{ mysql_replication_user.name }}"
         master_password: "{{ mysql_replication_user.password }}"
