@@ -18,24 +18,18 @@
       when: inventory_hostname != ansible_facts['nodename']
 
     - name: Install first necessary packages (apt)
-      apt: name={{ item }} state=present update_cache=yes
-      with_items:
-        - htop
-        - atop
-        - mc
-        - nano
-        - curl
+      apt: 
+        name: ['htop','atop','mc','nano','curl']
+        state: present
+        update_cache: yes
       environment: '{{ proxy_env | default({}) }}'
       when: ansible_os_family == "Debian"
     
     - name: Install first necessary packages (yum)
-      yum: name={{ item }} state=present update_cache=yes
-      with_items:
-        - htop
-        - atop
-        - mc
-        - nano
-        - curl
+      yum: 
+        name: ['htop','atop','mc','nano','curl']
+        state: present
+        update_cache: yes
       environment: '{{ proxy_env | default({}) }}'
       when: ansible_os_family == "RedHat"
 
