@@ -10,16 +10,16 @@
 
 - block:
     - name: Install ufw with apt
-    apt: pkg=ufw state=present
-    when: ansible_os_family == 'Debian'
+      apt: pkg=ufw state=present
+      when: ansible_os_family == 'Debian'
 
-  - name: Install epel-release with yum
-    yum: pkg=epel-release state=present
-    when: ansible_os_family == 'RedHat'
+    - name: Install epel-release with yum
+      yum: pkg=epel-release state=present
+      when: ansible_os_family == 'RedHat'
 
-  - name: Install ufw with yum
-    yum: pkg=ufw state=present
-    when: ansible_os_family == 'RedHat'
+    - name: Install ufw with yum
+      yum: pkg=ufw state=present
+      when: ansible_os_family == 'RedHat'
   environment: '{{ proxy_env | default({}) }}'
   tags: install_ufw
 
