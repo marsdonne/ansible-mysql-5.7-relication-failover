@@ -11,12 +11,10 @@
         state: present
 
     - name: Install orchestrator necessary packages
-      apt: name={{ item }} state=latest update_cache=yes
-      with_items:
-        - orchestrator-cli
-        - orchestrator
-        - curl
-        - jq
+      apt: 
+        name: ['orchestrator-cli-3.1.2-1.x86_64.rpm','orchestrator-3.1.2-1.x86_64.rpm','curl','jq']
+        state: latest
+        update_cache: yes
   environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "Debian"
   tags: install_orchestrator
@@ -28,15 +26,14 @@
         dest: /root
         mode: 0775
       with_items:
-        - https://packagecloud.io/github/orchestrator/packages/el/7/orchestrator-cli-3.1.1-1.x86_64.rpm/download.rpm
-        - https://packagecloud.io/github/orchestrator/packages/el/7/orchestrator-3.1.1-1.x86_64.rpm/download.rpm
+        - https://packagecloud.io/github/orchestrator/packages/el/7/orchestrator-cli-3.1.2-1.x86_64.rpm/download.rpm
+        - https://packagecloud.io/github/orchestrator/packages/el/7/orchestrator-3.1.2-1.x86_64.rpm/download.rpm
 
     - name: Install orchestrator necessary packages
-      yum: name={{ item }} state=latest update_cache=yes
-      with_items:
-        - orchestrator-cli-3.1.1-1.x86_64.rpm
-        - orchestrator-3.1.1-1.x86_64.rpm
-        - jq
+      yum: 
+        name: ['orchestrator-cli-3.1.2-1.x86_64.rpm','orchestrator-3.1.2-1.x86_64.rpm','jq']
+        state: latest
+        update_cache: yes
   environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "RedHat"
   tags: install_orchestrator
