@@ -17,7 +17,6 @@
           - orchestrator
           - curl
           - jq
-  environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "Debian"
   tags: install_orchestrator
 
@@ -37,7 +36,6 @@
         - orchestrator-cli-3.1.1-1.x86_64.rpm
         - orchestrator-3.1.1-1.x86_64.rpm
         - jq
-  environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "RedHat"
   tags: install_orchestrator
 
