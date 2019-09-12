@@ -11,11 +11,10 @@
         state: present
 
     - name: Install mysql necessary packages (apt)
-      apt: name={{ item }} state=present update_cache=yes
-      with_items:
-        - mysql-client
-        - mysql-utilities
-        - python-mysqldb
+      apt: 
+        name: ['mysql-client', 'mysql-utilities', 'python-mysqldb']
+        state: present
+        update_cache: yes
   environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "Debian"
   tags: install_mysql_necessary_packages
@@ -27,11 +26,10 @@
         state: present
 
     - name: Install mysql necessary packages (yum)
-      yum: name={{ item }} state=present update_cache=yes
-      with_items:
-        - mysql-community-client
-        - mysql-utilities
-        - MySQL-python
+      yum: 
+        name: ['mysql-community-client', 'mysql-utilities', 'MySQL-python']
+        state: present
+        update_cache: yes
   environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "RedHat"
   tags: install_mysql_necessary_packages
