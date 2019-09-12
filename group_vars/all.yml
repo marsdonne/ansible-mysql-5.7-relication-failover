@@ -1,3 +1,8 @@
+# Proxy variables (for offline installation)
+proxy_env: {}
+#  http_proxy: http://10.128.64.9:3128
+#  https_proxy: http://10.128.64.9:3128
+
 ansible_user: root
 
 frontend_mysql_master_port: 3310
