@@ -7,7 +7,6 @@
   tasks:
     - name: Ensure python2.x is available
       raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-      environment: '{{ proxy_env | default({}) }}'
 
 - name: Global Setup
   hosts: all
@@ -16,7 +15,7 @@
   tasks:
     - name: Ensure hostname valid on all hosts
       command: hostnamectl set-hostname {{ inventory_hostname }}
-      #when: inventory_hostname != ansible_facts['nodename']
+      when: inventory_hostname != ansible_facts['nodename']
 
     - name: Install first necessary packages (apt)
       apt: name={{ item }} state=present update_cache=yes
