@@ -12,11 +12,11 @@
 
     - name: Install orchestrator necessary packages
       apt: name={{ item }} state=latest update_cache=yes
-        with_items:
-          - orchestrator-cli
-          - orchestrator
-          - curl
-          - jq
+      with_items:
+        - orchestrator-cli
+        - orchestrator
+        - curl
+        - jq
   environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "Debian"
   tags: install_orchestrator
