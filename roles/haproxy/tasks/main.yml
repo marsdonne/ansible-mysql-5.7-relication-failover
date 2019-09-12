@@ -1,6 +1,7 @@
 ---
 - name: Install haproxy with apt
   apt: pkg=haproxy state=present update_cache=yes
+  environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "Debian"
   tags: install_haproxy
 
@@ -13,6 +14,7 @@
 
     - name: Change the haproxy_connect_any to permissive
       command: setsebool -P haproxy_connect_any=1
+  environment: '{{ proxy_env | default({}) }}'
   when: ansible_os_family == "RedHat"
   tags: install_haproxy
 
