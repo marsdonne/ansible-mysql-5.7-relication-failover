@@ -37,6 +37,7 @@
         - mc
         - nano
         - curl
+      environment: '{{ proxy_env | default({}) }}'
       when: ansible_os_family == "RedHat"
 
     - name: Add hosts
