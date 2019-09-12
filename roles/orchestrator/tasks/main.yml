@@ -1,9 +1,45 @@
 ---
-- import_tasks: install_with_apt.yml
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- block: 
+    - name: Add orchestrator key
+      apt_key:
+        url: "https://packagecloud.io/github/orchestrator/gpgkey"
+        state: present
 
-- import_tasks: install_with_yum.yml
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+    - name: Add orchestrator repo
+      apt_repository:
+        repo: deb https://packagecloud.io/github/orchestrator/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main
+        state: present
+
+    - name: Install orchestrator necessary packages
+      apt: name={{ item }} state=latest update_cache=yes
+        with_items:
+          - orchestrator-cli
+          - orchestrator
+          - curl
+          - jq
+  environment: '{{ proxy_env | default({}) }}'
+  when: ansible_os_family == "Debian"
+  tags: install_orchestrator
+
+- block:
+    - name: Download orchestrator packages
+      get_url:
+        url: "{{ item }}"
+        dest: /root
+        mode: 0775
+      with_items:
+        - https://packagecloud.io/github/orchestrator/packages/el/7/orchestrator-cli-3.1.1-1.x86_64.rpm/download.rpm
+        - https://packagecloud.io/github/orchestrator/packages/el/7/orchestrator-3.1.1-1.x86_64.rpm/download.rpm
+
+    - name: Install orchestrator necessary packages
+      yum: name={{ item }} state=latest update_cache=yes
+      with_items:
+        - orchestrator-cli-3.1.1-1.x86_64.rpm
+        - orchestrator-3.1.1-1.x86_64.rpm
+        - jq
+  environment: '{{ proxy_env | default({}) }}'
+  when: ansible_os_family == "RedHat"
+  tags: install_orchestrator
 
 - name: Create my.cnf because root user require password on this setup
   template:
