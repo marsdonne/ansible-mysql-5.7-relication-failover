@@ -1,7 +1,7 @@
 # Proxy variables (for offline installation)
 proxy_env: {}
-#  http_proxy: http://10.128.64.9:3128
-#  https_proxy: http://10.128.64.9:3128
+#  http_proxy: http://192.168.56.110:3128
+#  https_proxy: http://192.168.56.110:3128
 
 ansible_user: root
 
