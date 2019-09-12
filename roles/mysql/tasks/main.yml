@@ -42,6 +42,8 @@
     group: root
     mode: 0600
 
+- import_tasks: server.yml
+
 - import_tasks: master.yml
   when: mysql_role is defined and mysql_role == 'master'
 
