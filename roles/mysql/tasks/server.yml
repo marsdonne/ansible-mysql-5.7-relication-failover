@@ -21,7 +21,7 @@
     insertafter="{{ item.after }}"
     line="{{ item.line }}"
     state=present
-    backup=yes
+    backup=no
   with_items:
     - { regexp: '^#?\s*bind-address', line: "bind-address = 0.0.0.0", after: "" }
     - { regexp: '^#?\s*server-id', line: "server-id = {{ groups.mysql.index(inventory_hostname) + 1 }}", after: "" }
