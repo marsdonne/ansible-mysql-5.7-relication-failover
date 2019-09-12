@@ -53,5 +53,5 @@ ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --ask-pass --ask-sudo-pass -i h
 Manually recover Dead-Master to slave:
 
 ```
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook recoverDeadMaster2Slave.yml --ask-pass --ask-sudo-pass -e '{"dead_master_host":"192.168.56.123","live_master_host":"192.168.56.111"}'
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook replicate.yml --ask-pass --ask-sudo-pass -e '{"master":"192.168.56.123","slave":"192.168.56.111"}'
 ```
