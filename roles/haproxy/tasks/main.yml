@@ -9,8 +9,11 @@
     - name: Install haproxy with yum
       yum: pkg=haproxy state=present update_cache=yes
 
-    - name: Init haproxy env
-      file: path=/run/haproxy state=directory
+    - name: Fix haproxy.service to mkdir /run/haproxy
+      lineinfile:
+        path: /usr/lib/systemd/system/haproxy.service
+        regexp: '^ExecStartPre'
+        line: ExecStartPre=/bin/mkdir -p /run/haproxy
 
     - name: Change the haproxy_connect_any to permissive
       command: setsebool -P haproxy_connect_any=1
