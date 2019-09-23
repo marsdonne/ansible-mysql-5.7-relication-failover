@@ -8,6 +8,15 @@
   "MySQLTopologySSLCAFile": "",
   "MySQLTopologySSLSkipVerify": true,
   "MySQLTopologyUseMutualTLS": false,
+  "RaftEnabled": true,
+  "RaftDataDir": "/var/lib/orchestrator",
+  "RaftBind": "{{ ansible_host }}",
+  "DefaultRaftPort": 10008,
+  "RaftNodes": [
+  {% for node in groups['orchestrator'] %}
+      "{{hostvars[node].ansible_host}}"{% if not loop.last %},{% endif %}
+  {% endfor %}
+  ],
   "BackendDB": "sqlite",
   "SQLite3DataFile": "/usr/local/orchestrator/orchestrator.db",
   "MySQLConnectTimeoutSeconds": 1,
