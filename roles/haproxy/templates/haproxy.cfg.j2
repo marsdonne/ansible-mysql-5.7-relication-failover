@@ -39,6 +39,24 @@ listen stats
     stats enable
     stats uri /
 
+listen orchestrator
+  bind  0.0.0.0:3001
+  mode tcp
+  option httpchk GET /api/leader-check
+  maxconn 10000
+  balance first
+  retries 1
+  timeout connect 1000
+  timeout check 300
+  timeout server 30s
+  timeout client 30s
+
+  default-server port 3000 fall 1 inter 1000 rise 1 downinter 1000 on-marked-down shutdown-sessions weight 10
+
+  {% for host in groups['orchestrator'] %}
+  server {{ hostvars[host]['ansible_hostname'] }} {{ hostvars[host]['inventory_hostname'] }}:3000 check
+  {% endfor %}
+
 frontend ft_mysql_master
         bind *:{{ frontend_mysql_master_port }} name mysql
         default_backend bk_mysql_master
