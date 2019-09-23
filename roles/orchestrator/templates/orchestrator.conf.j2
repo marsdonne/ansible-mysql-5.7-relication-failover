@@ -8,7 +8,7 @@
   "MySQLTopologySSLCAFile": "",
   "MySQLTopologySSLSkipVerify": true,
   "MySQLTopologyUseMutualTLS": false,
-  "RaftEnabled": true,
+  "RaftEnabled": {{ 'true' if groups['orchestrator'] | length > 1 else 'false' }},
   "RaftDataDir": "/var/lib/orchestrator",
   "RaftBind": "{{ ansible_host }}",
   "DefaultRaftPort": 10008,
