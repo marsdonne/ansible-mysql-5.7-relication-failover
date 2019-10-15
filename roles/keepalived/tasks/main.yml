@@ -1,0 +1,75 @@
+---
+
+- name: keepalived | install the prerequisites packages
+  package:
+    name: "{{ packages }}"
+  environment: '{{ proxy_env | default({}) }}'
+  vars:
+    packages:
+      - make
+      - gcc
+      - gcc-c++
+      - openssl
+      - openssl-devel
+      - popt-devel
+      - automake
+      - autoconf
+      - libtool
+      - ipvsadm
+      - popt-devel
+      - popt-static
+      - libnl-devel
+      - libnfnetlink-devel
+      - nmap
+
+- name: keepalived | upload packages
+  copy:
+    src: "{{ item }}.tar.gz"
+    dest: "/tmp/{{ item }}.tar.gz"
+    mode: 01777
+  with_items:
+    - "keepalived-{{ keepalived_version }}"
+
+- name: keepalived | unarchive packages
+  unarchive:
+    src: "/tmp/{{ item }}.tar.gz"
+    dest: /tmp
+    remote_src: yes
+    mode: 01777
+  with_items:
+    - "keepalived-{{ keepalived_version }}"
+
+- name: keepalived | complie and install
+  shell: ./configure --prefix=/usr/local/keepalived && make && make install
+  args:
+    chdir: "/tmp/keepalived-{{ keepalived_version }}"
+
+- name: keepalived | create directories
+  file:
+    dest: /etc/keepalived
+    state: directory
+    mode: 01777
+
+- name: keepalived | copy program files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    remote_src: yes
+    mode: 01777
+  with_items:
+    - { src: "/tmp/keepalived-{{ keepalived_version }}/keepalived/etc/init.d/keepalived", dest: /etc/init.d/keepalived }
+    - { src: "/tmp/keepalived-{{ keepalived_version }}/keepalived/etc/sysconfig/keepalived", dest: /etc/sysconfig/keepalived }
+    - { src: /usr/local/keepalived/sbin/keepalived, dest: /usr/local/sbin/keepalived }
+
+- name: keepalived | configure
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/keepalived/{{ item }}"
+  with_items:
+    - keepalived.conf
+
+- name: keepalived | enabled and started service
+  service:
+    name: keepalived
+    enabled: yes
+    state: started
